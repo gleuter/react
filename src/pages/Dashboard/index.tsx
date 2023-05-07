@@ -1,31 +1,76 @@
 import React from "react";
-import { Title, Form, Repos } from './style'
+import { FiChevronRight } from 'react-icons/fi'
+
+import { api } from '../../services/api'
+import { Title, Form, Repos , Error } from './style'
 import logo from '../../assests/logo.svg'
+
 import { Repo } from "../Repo";
-import {FiChevronRight} from 'react-icons/fi'
+
+interface GithubRepository {
+    full_name: string;
+    description: string;
+    owner: {
+        login: string;
+        avatar_url: string;
+    }
+
+}
 
 export const Dashbaord: React.FC = () => {
+    const [repos, setRepos] = React.useState<GithubRepository[]>([])
+    const [newRepo, setNewRepo] = React.useState('')
+    const [inputError, setInputError] = React.useState('')
+
+    function handeInputChange(event: React.ChangeEvent<HTMLInputElement>): void {
+        setNewRepo(event.target.value)
+    }
+
+    async function handleAddRepo(
+        event: React.FormEvent<HTMLFormElement>,
+    ): Promise<void> {
+        event.preventDefault();
+
+        if (!newRepo) {
+            setInputError('Informe o user name /repositório')
+            return
+        }
+
+        const response = await api.get<GithubRepository>(`repos/${newRepo}`)
+
+        const repository = response.data
+
+        setRepos([...repos, repository])
+        setNewRepo('')
+    }
+
+
     return (
         <>
             <img src={logo} alt="GitCollection" />
             <Title>Catalogo de repositorios do Github</Title>
-            <Form>
-                <input placeholder="username/repository_name" />
+
+            <Form hasError={Boolean(inputError)} onSubmit={handleAddRepo}>
+                <input placeholder="username/repository_name" onChange={handeInputChange} />
                 <button type="submit">Buscar</button>
             </Form>
 
+            {inputError && <Error>{inputError}</Error>}
+
             <Repos>
-                <a href="/repositories">
-                    <img
-                        src="https://avatars.githubusercontent.com/u/68967867?v=4"
-                        alt="Repositorio"
-                    />
-                    <div>
-                        <strong>aluiziodeveloper/mini-curso-reactjs</strong>
-                        <p>Repositorio do mini curso gratuito de reactjs</p>
-                    </div>
-                    <FiChevronRight size={20} />
-                </a>
+                {repos.map(repository => (
+                    <a href="/repositories" key={repository.full_name}>
+                        <img
+                            src={repository.owner.avatar_url}
+                            alt={repository.owner.login}
+                        />
+                        <div>
+                            <strong>{repository.full_name}</strong>
+                            <p>{repository.description}</p>
+                        </div>
+                        <FiChevronRight size={20} />
+                    </a>
+                ))}
             </Repos>
         </>
 

@@ -2,7 +2,7 @@ import React from "react";
 import { FiChevronRight } from 'react-icons/fi'
 
 import { api } from '../../services/api'
-import { Title, Form, Repos , Error } from './style'
+import { Title, Form, Repos, Error } from './style'
 import logo from '../../assests/logo.svg'
 
 import { Repo } from "../Repo";
@@ -18,9 +18,24 @@ interface GithubRepository {
 }
 
 export const Dashbaord: React.FC = () => {
-    const [repos, setRepos] = React.useState<GithubRepository[]>([])
+    // const [repos, setRepos] = React.useState<GithubRepository[]>([])
+    const [repos, setRepos] = React.useState<GithubRepository[]>(() => {
+        const storageRepos = localStorage.getItem('@GitCollection:repositories');
+    
+        if (storageRepos) {
+          return JSON.parse(storageRepos);
+        }
+        return [];
+      });
+
+
     const [newRepo, setNewRepo] = React.useState('')
     const [inputError, setInputError] = React.useState('')
+
+
+    React.useEffect(() => {
+        localStorage.setItem('@GitCollection:repositories', JSON.stringify(repos));
+    }, [repos])
 
     function handeInputChange(event: React.ChangeEvent<HTMLInputElement>): void {
         setNewRepo(event.target.value)
@@ -59,7 +74,8 @@ export const Dashbaord: React.FC = () => {
 
             <Repos>
                 {repos.map(repository => (
-                    <a href="/repositories" key={repository.full_name}>
+                    <a href={`/repositorie/${repository.full_name}`} 
+                    key={repository.full_name}>
                         <img
                             src={repository.owner.avatar_url}
                             alt={repository.owner.login}

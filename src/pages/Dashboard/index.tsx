@@ -7,7 +7,7 @@ import { Title, Form, Repos, Error } from './style'
 import logo from '../../assests/logo.svg'
 
 
-import { Repo } from "../Repo";
+// import { Repo } from "../Repo";
 
 interface GithubRepository {
     full_name: string;
@@ -19,7 +19,7 @@ interface GithubRepository {
 
 }
 
-export const Dashbaord: React.FC = () => {
+const Dashbaord: React.FC = () => {
     // const [repos, setRepos] = React.useState<GithubRepository[]>([])
     const [repos, setRepos] = React.useState<GithubRepository[]>(() => {
         const storageRepos = localStorage.getItem('@GitCollection:repositories');
@@ -81,9 +81,9 @@ export const Dashbaord: React.FC = () => {
             {inputError && <Error>{inputError}</Error>}
 
             <Repos>
-                {repos.map(repository => (
+                {repos.map((repository,index) => (
                     <Link to={`/repositories/${repository.full_name}`} 
-                    key={repository.full_name}>
+                    key={repository.full_name + index}>
                         <img
                             src={repository.owner.avatar_url}
                             alt={repository.owner.login}
@@ -101,3 +101,4 @@ export const Dashbaord: React.FC = () => {
 
     )
 }
+export default Dashbaord;

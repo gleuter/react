@@ -3,8 +3,10 @@ import {Switch, Route} from 'react-router-dom';
 // import { Dashbaord } from '../pages/Dashboard';
 // import { Repo } from '../pages/Repo';
 
-const Dashbaord = React.lazy(() => import('../pages/Dashboard'));
-const Repo = React.lazy(() => import('../pages/Repo'));
+const Dashbaord = React.lazy(() => import( /* webpackPrefetch: true */
+/* webpackChunkName: "Dashbaord" */'../pages/Dashboard'));
+const Repo = React.lazy(() => import( /* webpackPrefetch: true */
+/* webpackChunkName: "Repo" */'../pages/Repo'));
 
 
 export const Routes: React.FC = () => {
